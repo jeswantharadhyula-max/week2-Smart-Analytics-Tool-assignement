@@ -1,0 +1,128 @@
+import streamlit as st
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+st.set_page_config(page_title="Smart Analytics Tool", layout="wide")
+
+st.title("📊 Smart Analytics Tool")
+st.write("Upload a CSV file and perform quick data analysis.")
+
+# ==========================
+
+# CSV Upload Feature
+
+# ==========================
+
+uploaded_file = st.file_uploader(
+"Upload a CSV File",
+type=["csv"]
+)
+
+if uploaded_file is not None:
+
+```
+df = pd.read_csv(uploaded_file)
+
+# ==========================
+# Dataset Preview
+# ==========================
+
+st.header("Dataset Preview")
+
+st.dataframe(df.head())
+
+st.write("Rows:", df.shape[0])
+st.write("Columns:", df.shape[1])
+
+# ==========================
+# Missing Value Analysis
+# ==========================
+
+st.header("Missing Value Analysis")
+
+missing = df.isnull().sum()
+
+st.dataframe(
+    pd.DataFrame({
+        "Column": missing.index,
+        "Missing Values": missing.values
+    })
+)
+
+# ==========================
+# Statistical Summary
+# ==========================
+
+st.header("Statistical Summary")
+
+st.dataframe(df.describe())
+
+# ==========================
+# Dynamic Visualizations
+# ==========================
+
+st.header("Visualizations")
+
+numeric_cols = df.select_dtypes(
+    include=["number"]
+).columns.tolist()
+
+if len(numeric_cols) > 0:
+
+    # Visualization 1
+    st.subheader("Histogram")
+
+    col1 = st.selectbox(
+        "Select Numeric Column",
+        numeric_cols
+    )
+
+    fig, ax = plt.subplots()
+    sns.histplot(df[col1], kde=True, ax=ax)
+    st.pyplot(fig)
+
+    # Visualization 2
+    st.subheader("Box Plot")
+
+    col2 = st.selectbox(
+        "Select Column for Boxplot",
+        numeric_cols,
+        key="box"
+    )
+
+    fig, ax = plt.subplots()
+    sns.boxplot(y=df[col2], ax=ax)
+    st.pyplot(fig)
+
+    # Visualization 3
+    st.subheader("Scatter Plot")
+
+    x_col = st.selectbox(
+        "X Axis",
+        numeric_cols,
+        key="x"
+    )
+
+    y_col = st.selectbox(
+        "Y Axis",
+        numeric_cols,
+        key="y"
+    )
+
+    fig, ax = plt.subplots()
+
+    sns.scatterplot(
+        data=df,
+        x=x_col,
+        y=y_col,
+        ax=ax
+    )
+
+    st.pyplot(fig)
+
+else:
+    st.warning(
+        "No numeric columns found for visualization."
+    )
+```
